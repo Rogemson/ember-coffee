@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { navConfig, siteConfig } from '@/config/site';
+import { useCart } from '@/contexts/cart-contexts';
 import { Button } from '@/components/ui/button';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { totalItems } = useCart();
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/80">
@@ -35,29 +37,21 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            {/* Search - TODO */}
-            <button
-              className="hidden text-gray-700 transition-colors hover:text-[#3E2723] lg:block"
-              aria-label="Search"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-
             {/* Cart */}
-            <button
+            <Link
+              href="/cart"
               className="relative text-gray-700 transition-colors hover:text-[#3E2723]"
               aria-label="Shopping cart"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              {/* Cart count badge - TODO: Connect to cart state */}
-              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#FFA726] text-xs font-bold text-white">
-                0
-              </span>
-            </button>
+              {totalItems > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#FFA726] text-xs font-bold text-white">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
 
             {/* Mobile menu button */}
             <button

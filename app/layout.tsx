@@ -1,10 +1,13 @@
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Providers } from './providers';
 import './globals.css';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 
-export const metadata = {
-  title: 'Shop',
-  description: 'Coffee store built with Next.js',
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'Ember Coffee Co.',
+  description: 'Start your day, elevated',
 };
 
 export default function RootLayout({
@@ -14,10 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
