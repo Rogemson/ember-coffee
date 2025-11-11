@@ -222,7 +222,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 className="w-full"
                 onClick={handleAddToCart}
                 disabled={!selectedVariant.availableForSale || isAdding}
-                isLoading={isAdding}
             >
                 {selectedVariant.availableForSale
                 ? isAdding
