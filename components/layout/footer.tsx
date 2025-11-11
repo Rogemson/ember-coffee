@@ -1,139 +1,320 @@
+'use client';
+
 import Link from 'next/link';
+import { useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
+import ScrollTrigger from 'gsap/dist/ScrollTrigger';
 import { siteConfig } from '@/config/site';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const columnsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Animate footer columns on scroll into view
+      columnsRef.current.forEach((column, index) => {
+        if (!column) return;
+
+        gsap.from(column, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top 85%',
+          },
+          opacity: 0,
+          y: 30,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: index * 0.1,
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const footerLinks = {
+    Shop: [
+      { label: 'All Coffee', href: '/products' },
+      { label: 'Subscriptions', href: '/subscriptions' },
+      { label: 'Brewing Guides', href: '/guides' },
+    ],
+    Company: [
+      { label: 'About Us', href: '/about' },
+      { label: 'Our Story', href: '/story' },
+      { label: 'Contact', href: '/contact' },
+    ],
+    Support: [
+      { label: 'FAQ', href: '/faq' },
+      { label: 'Shipping Info', href: '/shipping' },
+      { label: 'Returns', href: '/returns' },
+    ],
+    Legal: [
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms' },
+      { label: 'Cookie Policy', href: '/cookies' },
+    ],
+  };
 
   return (
-    <footer className="border-t border-gray-200 bg-[#3E2723] text-white">
-      <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-4">
-          {/* Brand */}
-          <div>
-            <div className="mb-4 flex items-center gap-2">
-              <span className="text-2xl">☕</span>
-              <span className="text-xl font-bold">{siteConfig.name}</span>
-            </div>
-            <p className="text-sm text-gray-400">
-              Exceptional single-origin coffee, ethically sourced and freshly roasted.
+    <footer
+      ref={containerRef}
+      className="mt-24 md:mt-32 lg:mt-40"
+      style={{
+        backgroundColor: '#2a1f17', // Dark brown
+        color: '#d4c5b0',
+        borderTop: '1px solid rgba(184, 134, 11, 0.2)',
+      }}
+    >
+      <div className="container mx-auto px-4 lg:px-8 py-16 md:py-20">
+        {/* Main Footer Grid */}
+        <div className="grid md:grid-cols-5 gap-12 md:gap-8 mb-16">
+          {/* Brand Column */}
+          <div
+            ref={(el) => {
+              columnsRef.current[0] = el;
+            }}
+            className="md:col-span-1"
+          >
+            <h3
+              style={{
+                fontSize: 'clamp(1.125rem, 3vw, 1.375rem)',
+                fontFamily: '"Playfair Display", "Georgia", serif',
+                fontWeight: 700,
+                color: '#faf8f3',
+                marginBottom: '1rem',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              {siteConfig.name}
+            </h3>
+            <p
+              style={{
+                fontSize: '0.95rem',
+                lineHeight: 1.6,
+                color: '#d4c5b0',
+                marginBottom: '1.5rem',
+              }}
+            >
+              Exceptional coffee, ethically sourced and freshly roasted for the discerning palate.
             </p>
+
+            {/* Social Links */}
+            <div className="flex gap-4">
+              {[
+                { icon: 'Instagram', href: '#' },
+                { icon: 'Facebook', href: '#' },
+                { icon: 'Twitter', href: '#' },
+              ].map((social) => (
+                <a
+                  key={social.icon}
+                  href={social.href}
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-lg hover:opacity-80 transition-opacity"
+                  style={{
+                    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                    color: '#b8860b',
+                  }}
+                  aria-label={social.icon}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="1" />
+                  </svg>
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Shop */}
-          <div>
-            <h3 className="mb-4 font-semibold">Shop</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <Link href="/products" className="hover:text-white">
-                  All Coffee
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?filter=light" className="hover:text-white">
-                  Light Roast
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?filter=medium" className="hover:text-white">
-                  Medium Roast
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?filter=dark" className="hover:text-white">
-                  Dark Roast
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="mb-4 font-semibold">Company</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <Link href="/about" className="hover:text-white">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/quiz" className="hover:text-white">
-                  Coffee Quiz
-                </Link>
-              </li>
-              <li>
-                <Link href="/brewing-guide" className="hover:text-white">
-                  Brewing Guide
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h3 className="mb-4 font-semibold">Support</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <Link href="/faq" className="hover:text-white">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="hover:text-white">
-                  Shipping Info
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="hover:text-white">
-                  Returns
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Footer Columns */}
+          {Object.entries(footerLinks).map(([title, links], colIndex) => (
+            <div
+              key={title}
+              ref={(el) => {
+                columnsRef.current[colIndex + 1] = el;
+              }}
+            >
+              <h4
+                style={{
+                  fontSize: '0.875rem',
+                  fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#faf8f3',
+                  marginBottom: '1.25rem',
+                }}
+              >
+                {title}
+              </h4>
+              <ul className="space-y-3">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="inline-block hover:text-copper transition-colors duration-300"
+                      style={{
+                        fontSize: '0.95rem',
+                        color: '#d4c5b0',
+                        textDecoration: 'none',
+                      }}
+                      onMouseEnter={(e) => {
+                        gsap.to(e.currentTarget, {
+                          color: '#b8860b',
+                          x: 4,
+                          duration: 0.3,
+                        });
+                      }}
+                      onMouseLeave={(e) => {
+                        gsap.to(e.currentTarget, {
+                          color: '#d4c5b0',
+                          x: 0,
+                          duration: 0.3,
+                        });
+                      }}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        {/* Bottom */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-700 pt-8 md:flex-row">
-          <p className="text-sm text-gray-400">
-            © {currentYear} {siteConfig.name}. All rights reserved.
+        {/* Newsletter Signup */}
+        <div
+          className="mb-16 p-8 lg:p-10 rounded-lg"
+          style={{
+            backgroundColor: 'rgba(184, 134, 11, 0.08)',
+            borderLeft: '4px solid #b8860b',
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontFamily: '"Playfair Display", "Georgia", serif',
+              fontWeight: 700,
+              color: '#faf8f3',
+              marginBottom: '0.5rem',
+            }}
+          >
+            Stay Updated
+          </h3>
+          <p
+            style={{
+              fontSize: '0.95rem',
+              color: '#d4c5b0',
+              marginBottom: '1rem',
+            }}
+          >
+            Get brewing tips and new roast announcements delivered to your inbox.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              required
+              style={{
+                flex: 1,
+                padding: '0.75rem 1rem',
+                backgroundColor: '#3d2817',
+                color: '#faf8f3',
+                border: '1px solid rgba(184, 134, 11, 0.2)',
+                borderRadius: '0.25rem',
+                fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+                fontSize: '0.95rem',
+              }}
+              className="placeholder-gray-500"
+            />
+            <button
+              type="submit"
+              style={{
+                padding: '0.75rem 1.5rem',
+                backgroundColor: '#b8860b',
+                color: '#faf8f3',
+                border: 'none',
+                borderRadius: '0.25rem',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+                fontSize: '0.95rem',
+                transition: 'background-color 0.3s ease',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                gsap.to(e.currentTarget, {
+                  backgroundColor: '#9a6f0a',
+                  duration: 0.3,
+                });
+              }}
+              onMouseLeave={(e) => {
+                gsap.to(e.currentTarget, {
+                  backgroundColor: '#b8860b',
+                  duration: 0.3,
+                });
+              }}
+            >
+              Subscribe
+            </button>
+          </form>
+        </div>
+
+        {/* Bottom Bar */}
+        <div
+          className="pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6"
+          style={{
+            borderColor: 'rgba(184, 134, 11, 0.2)',
+          }}
+        >
+          <p
+            style={{
+              fontSize: '0.875rem',
+              color: '#b8860b',
+              margin: 0,
+            }}
+          >
+            &copy; {currentYear} {siteConfig.name}. All rights reserved.
           </p>
 
-          {/* Social Links */}
-          <div className="flex gap-4">
-            <a
-              href={siteConfig.links.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 transition-colors hover:text-white"
-              aria-label="Instagram"
+          {/* Payment Methods */}
+          <div className="flex items-center gap-4">
+            <span
+              style={{
+                fontSize: '0.875rem',
+                color: '#d4c5b0',
+              }}
             >
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-              </svg>
-            </a>
-            <a
-              href={siteConfig.links.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 transition-colors hover:text-white"
-              aria-label="Twitter"
-            >
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-              </svg>
-            </a>
+              Accepted Payments:
+            </span>
+            <div className="flex gap-3">
+              {['Visa', 'Mastercard', 'PayPal'].map((method) => (
+                <div
+                  key={method}
+                  className="flex items-center justify-center w-10 h-6 rounded"
+                  style={{
+                    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                    fontSize: '0.625rem',
+                    fontWeight: 600,
+                    color: '#b8860b',
+                  }}
+                >
+                  {method.substring(0, 2)}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Decorative top border */}
+      <div
+        style={{
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, #b8860b, transparent)',
+        }}
+      />
     </footer>
   );
 }

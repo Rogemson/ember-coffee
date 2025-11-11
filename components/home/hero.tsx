@@ -1,58 +1,218 @@
+'use client';
+
 import Link from 'next/link';
+import { useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
 import { Button } from '@/components/ui/button';
 
 export function Hero() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+  const indicatorsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Initial state
+      gsap.set([titleRef.current, descriptionRef.current, buttonsRef.current, indicatorsRef.current], {
+        opacity: 0,
+        y: 30,
+      });
+
+      // Staggered animation on mount
+      gsap.to([titleRef.current, descriptionRef.current, buttonsRef.current, indicatorsRef.current], {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power2.out',
+      });
+
+      // Parallax effect on scroll
+      gsap.to(heroRef.current, {
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'top center',
+          end: 'bottom center',
+          scrub: 0.5,
+          markers: false,
+        },
+        y: 50,
+        opacity: 0.8,
+        ease: 'none',
+      });
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative flex min-h-[600px] items-center justify-center overflow-hidden bg-linear-to-br from-[#3E2723] to-[#2C1810] px-4 py-20 text-white">
-      {/* Background pattern - optional */}
-      <div className="absolute inset-0 bg-[url('/coffee-pattern.svg')] opacity-10" />
-      
-      <div className="relative z-10 mx-auto max-w-4xl text-center">
-        <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-          Start Your Day,
-          <span className="block text-[#FFA726]">Elevated</span>
-        </h1>
-        
-        <p className="mb-8 text-lg text-gray-300 sm:text-xl lg:text-2xl">
-          Exceptional single-origin coffee, ethically sourced and freshly roasted.
-          <br className="hidden sm:block" />
-          Delivered to your door exactly when you need it.
-        </p>
+    <section
+      ref={heroRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{
+        backgroundColor: '#faf8f3', // 60% - Warm cream (primary background)
+      }}
+    >
+      {/* Subtle background texture */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
 
-        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Button size="lg" variant="secondary" asChild>
-            <Link href="/products">Shop Coffee</Link>
-          </Button>
-          
-          <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-[#3E2723]" asChild>
-            <Link href="/quiz">Find Your Roast</Link>
-          </Button>
-        </div>
+      <div className="container mx-auto px-4 lg:px-8 relative z-10 py-20">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Main heading with premium serif font */}
+          <h1
+            ref={titleRef}
+            className="mb-8 leading-tight"
+            style={{
+              fontSize: 'clamp(2.5rem, 8vw, 4rem)',
+              fontFamily: '"Playfair Display", "Georgia", serif',
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              color: '#3d2817', // 30% - Deep brown (primary text)
+            }}
+          >
+            Start Your Day,{' '}
+            <span
+              style={{
+                color: '#b8860b', // 10% - Warm copper accent
+              }}
+            >
+              Elevated
+            </span>
+          </h1>
 
-        {/* Trust indicators */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-gray-400">
-          <div className="flex items-center gap-2">
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span>Direct Trade</span>
+          {/* Subtitle with refined typography */}
+          <p
+            ref={descriptionRef}
+            className="mb-12"
+            style={{
+              fontSize: 'clamp(1.125rem, 3vw, 1.375rem)',
+              fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+              lineHeight: 1.6,
+              letterSpacing: '0.01em',
+              color: '#6b5449', // Muted brown
+              maxWidth: '580px',
+              margin: '0 auto',
+            }}
+          >
+            Exceptional single-origin coffee, ethically sourced and freshly roasted. Delivered to your door exactly when you need it.
+          </p>
+
+          {/* CTA Buttons */}
+          <div
+            ref={buttonsRef}
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-16 md:mb-20"
+          >
+            <Button
+              asChild
+              size="lg"
+              className="px-8 py-6 text-base font-600 rounded-sm"
+              style={{
+                backgroundColor: '#b8860b', // 10% - Warm copper
+                color: '#faf8f3', // Cream text
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              }}
+              onMouseEnter={(e) => {
+                gsap.to(e.currentTarget, {
+                  backgroundColor: '#9a6f0a',
+                  duration: 0.3,
+                });
+              }}
+              onMouseLeave={(e) => {
+                gsap.to(e.currentTarget, {
+                  backgroundColor: '#b8860b',
+                  duration: 0.3,
+                });
+              }}
+            >
+              <Link href="/products">Shop Coffee</Link>
+            </Button>
+
+            <Button
+              asChild
+              size="lg"
+              className="px-8 py-6 text-base font-600 rounded-sm"
+              style={{
+                backgroundColor: 'transparent',
+                color: '#3d2817',
+                border: '2px solid #3d2817',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              }}
+              onMouseEnter={(e) => {
+                gsap.to(e.currentTarget, {
+                  backgroundColor: '#3d2817',
+                  color: '#faf8f3',
+                  duration: 0.3,
+                });
+              }}
+              onMouseLeave={(e) => {
+                gsap.to(e.currentTarget, {
+                  backgroundColor: 'transparent',
+                  color: '#3d2817',
+                  duration: 0.3,
+                });
+              }}
+            >
+              <Link href="/quiz">Find Your Roast</Link>
+            </Button>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Freshly Roasted</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Free Shipping Over $30</span>
+
+          {/* Trust indicators with refined styling */}
+          <div
+            ref={indicatorsRef}
+            className="flex flex-wrap justify-center gap-6 sm:gap-12 text-sm"
+            style={{
+              color: '#6b5449',
+              fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+              letterSpacing: '0.02em',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span className="font-500">Direct Trade</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span className="font-500">Freshly Roasted</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span className="font-500">Free Shipping $30+</span>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Bottom scroll indicator */}
+      <div
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-70"
+        style={{ animation: 'bounce 2s infinite' }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d2817" strokeWidth="2">
+          <path d="M12 5v14M19 12l-7 7-7-7" />
+        </svg>
+      </div>
+
+      <style jsx>{`
+        @keyframes bounce {
+          0%, 100% {
+            transform: translateX(-50%) translateY(0);
+          }
+          50% {
+            transform: translateX(-50%) translateY(8px);
+          }
+        }
+      `}</style>
     </section>
   );
 }

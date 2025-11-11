@@ -1,75 +1,230 @@
-import { getAllProducts } from '@/lib/shopify/index';
+'use client';
+
+import { useEffect } from 'react';
+import gsap from 'gsap';
+import ScrollSmoother from 'gsap/dist/ScrollSmoother';
+import ScrollTrigger from 'gsap/dist/ScrollTrigger';
 import { Hero } from '@/components/home/hero';
 import { FeaturedProducts } from '@/components/home/featured-products';
 import { HowItWorks } from '@/components/home/how-it-works';
 
-export const metadata = {
-  title: 'Ember Coffee Co. - Start Your Day, Elevated',
-  description: 'Exceptional single-origin coffee, ethically sourced and freshly roasted.',
-};
+gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
-export default async function HomePage() {
-  // Fetch products with error handling
-  let featuredProducts = [];
-  
-  try {
-    const allProducts = await getAllProducts(8);
-    featuredProducts = allProducts.slice(0, 4);
-  } catch (error) {
-    console.error('Error loading products on homepage:', error);
-  }
+export default function HomePage({ featuredProducts = [] }: { featuredProducts?: any[] }) {
+  useEffect(() => {
+    // Initialize ScrollSmoother for smooth scrolling
+    let smoother = ScrollSmoother.create({
+      wrapper: '#smooth-wrapper',
+      content: '#smooth-content',
+      smooth: 1, // 1 second smooth animation
+      effects: true,
+      onUpdate: (smoother) => {
+        // Optional: trigger updates as user scrolls
+      },
+    });
+
+    return () => {
+      if (smoother) {
+        smoother.kill();
+      }
+    };
+  }, []);
 
   return (
-    <>
-      <Hero />
-      
-      {/* Only show featured products if we have them */}
-      {featuredProducts.length > 0 ? (
-        <FeaturedProducts products={featuredProducts} />
-      ) : (
-        <section className="bg-[#FFF8E1] px-4 py-20">
-          <div className="mx-auto max-w-7xl text-center">
-            <h2 className="mb-4 text-4xl font-bold text-[#3E2723]">
-              Our Featured Roasts
-            </h2>
-            <p className="mb-8 text-lg text-gray-700">
-              Products coming soon! Add products to your Shopify store to see them here.
-            </p>
-            <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12">
-              <svg className="mx-auto mb-4 h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-              <p className="text-gray-600">
-                <strong>Next step:</strong> Add your coffee products in Shopify Admin
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        {/* Hero Section */}
+        <Hero />
+
+        {/* How It Works Section */}
+        <HowItWorks />
+
+        {/* Featured Products Section */}
+        {featuredProducts.length > 0 && <FeaturedProducts products={featuredProducts} />}
+
+        {/* Newsletter CTA Section */}
+        <section
+          className="py-24 md:py-32"
+          style={{
+            backgroundColor: '#3d2817', // Deep brown accent section
+          }}
+        >
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="max-w-2xl mx-auto text-center">
+              <h2
+                style={{
+                  fontSize: 'clamp(1.75rem, 5vw, 2.25rem)',
+                  fontFamily: '"Playfair Display", "Georgia", serif',
+                  fontWeight: 700,
+                  letterSpacing: '-0.01em',
+                  color: '#faf8f3', // Cream text
+                  marginBottom: '1.5rem',
+                }}
+              >
+                Join Our Coffee Community
+              </h2>
+              <p
+                style={{
+                  fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                  fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+                  lineHeight: 1.6,
+                  letterSpacing: '0.01em',
+                  color: '#d4c5b0', // Light brown/cream
+                  marginBottom: '2rem',
+                }}
+              >
+                Get brewing tips, new roast announcements, and exclusive offers delivered to your inbox.
               </p>
+              <form className="flex flex-col sm:flex-row gap-3 justify-center max-w-sm mx-auto">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  required
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem 1rem',
+                    backgroundColor: '#faf8f3',
+                    color: '#3d2817',
+                    border: 'none',
+                    borderRadius: '0.25rem',
+                    fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+                    fontSize: '1rem',
+                  }}
+                  className="placeholder-gray-400"
+                />
+                <button
+                  type="submit"
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: '#b8860b', // Copper accent
+                    color: '#faf8f3',
+                    border: 'none',
+                    borderRadius: '0.25rem',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontFamily: '"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif',
+                    fontSize: '1rem',
+                    transition: 'background-color 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#9a6f0a';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#b8860b';
+                  }}
+                >
+                  Subscribe
+                </button>
+              </form>
             </div>
           </div>
         </section>
-      )}
-      
-      <HowItWorks />
-      
-      {/* Newsletter CTA */}
-      <section className="bg-[#3E2723] px-4 py-20 text-white">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold">
-            Join Our Coffee Community
-          </h2>
-          <p className="mb-8 text-gray-300">
-            Get brewing tips, new roast announcements, and exclusive offers.
-          </p>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 rounded-md border-0 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#FFA726]"
-            />
-            <button className="rounded-md bg-[#FFA726] px-6 py-3 font-semibold text-[#1B1B1B] transition-colors hover:bg-[#FF9800]">
-              Subscribe
-            </button>
+
+        {/* Footer */}
+        <footer
+          className="py-12 md:py-16"
+          style={{
+            backgroundColor: '#2a1f17',
+            color: '#d4c5b0',
+            borderTop: '1px solid rgba(184, 134, 11, 0.2)',
+          }}
+        >
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
+              {/* Brand */}
+              <div>
+                <h3
+                  style={{
+                    fontSize: '1.125rem',
+                    fontFamily: '"Playfair Display", "Georgia", serif',
+                    fontWeight: 700,
+                    color: '#faf8f3',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Ember Coffee Co.
+                </h3>
+                <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
+                  Exceptional coffee, ethically sourced and freshly roasted for the discerning palate.
+                </p>
+              </div>
+
+              {/* Quick Links */}
+              <div>
+                <h4
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: '#faf8f3',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Shop
+                </h4>
+                <ul style={{ fontSize: '0.875rem', lineHeight: 2 }}>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>All Coffee</a></li>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>Subscriptions</a></li>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>Brewing Guides</a></li>
+                </ul>
+              </div>
+
+              {/* Company */}
+              <div>
+                <h4
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: '#faf8f3',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Company
+                </h4>
+                <ul style={{ fontSize: '0.875rem', lineHeight: 2 }}>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>About</a></li>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>Our Story</a></li>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>Contact</a></li>
+                </ul>
+              </div>
+
+              {/* Legal */}
+              <div>
+                <h4
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: '#faf8f3',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Legal
+                </h4>
+                <ul style={{ fontSize: '0.875rem', lineHeight: 2 }}>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>Privacy</a></li>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>Terms</a></li>
+                  <li><a href="#" style={{ color: '#d4c5b0', textDecoration: 'none' }}>Shipping</a></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div
+              className="pt-8 border-t"
+              style={{ borderColor: 'rgba(184, 134, 11, 0.2)' }}
+            >
+              <p style={{ fontSize: '0.875rem', textAlign: 'center' }}>
+                &copy; 2025 Ember Coffee Co. All rights reserved.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
-    </>
+        </footer>
+      </div>
+    </div>
   );
 }
