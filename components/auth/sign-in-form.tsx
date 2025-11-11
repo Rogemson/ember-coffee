@@ -126,7 +126,6 @@ export function SignInForm() {
             size="lg"
             className="w-full"
             disabled={isLoading}
-            isLoading={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>

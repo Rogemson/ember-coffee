@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#3E2723] to-[#2C1810] px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-[#3E2723] to-[#2C1810] px-4 py-12">
       <SignInForm />
     </div>
   );
