@@ -2,14 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
 import { navConfig, siteConfig } from '@/config/site';
 import { useCart } from '@/contexts/cart-context';
 import { CartDrawer } from '@/components/cart/cart-drawer';
 import { SearchBar } from '@/components/search/search-bar';
 
 export function Header() {
+  const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { totalItems } = useCart();
 
   return (
@@ -42,6 +45,63 @@ export function Header() {
             <div className="flex items-center gap-4">
               {/* Search */}
               <SearchBar />
+
+              {/* Account */}
+              {session ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="hidden items-center gap-2 rounded-full bg-[#3E2723] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[#2C1810] lg:flex"
+                  >
+                    <span>{session.user?.name?.charAt(0) || 'U'}</span>
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+                      <div className="border-b border-gray-100 px-4 py-3">
+                        <p className="text-sm font-medium text-gray-900">
+                          {session.user?.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {session.user?.email}
+                        </p>
+                      </div>
+                      <div className="py-1">
+                        <Link
+                          href="/account"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          My Account
+                        </Link>
+                        <Link
+                          href="/orders"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          Orders
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            signOut({ callbackUrl: '/' });
+                          }}
+                          className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className="hidden text-sm font-medium text-gray-700 transition-colors hover:text-[#3E2723] lg:block"
+                >
+                  Sign In
+                </Link>
+              )}
 
               {/* Cart Button */}
               <button
@@ -115,6 +175,15 @@ export function Header() {
                     {item.title}
                   </Link>
                 ))}
+                {!session && (
+                  <Link
+                    href="/sign-in"
+                    className="text-base font-medium text-gray-700 transition-colors hover:text-[#3E2723]"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                )}
               </div>
             </nav>
           )}
