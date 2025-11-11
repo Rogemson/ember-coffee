@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { CartProvider } from '@/contexts/cart-contexts';
+import { CartProvider } from '@/contexts/cart-context';
 import { Header } from './header';
 import { Footer } from './footer';
 

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart } from '@/contexts/cart-contexts';
+import { useCart } from '@/contexts/cart-context';
 import { formatPrice } from '@/lib/utils/format';
 import { Button } from '@/components/ui/button';
 

@@ -7,7 +7,7 @@ import { Product, ProductVariant } from '@/types';
 import { formatPrice } from '@/lib/utils/format';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useCart } from '@/contexts/cart-contexts';
+import { useCart } from '@/contexts/cart-context';
 
 interface ProductDetailsProps {
   product: Product;

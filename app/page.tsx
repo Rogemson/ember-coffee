@@ -1,4 +1,4 @@
-import { getProducts } from '@/lib/shopify';
+import { getAllProducts } from '@/lib/shopify/index';
 import { Hero } from '@/components/home/hero';
 import { FeaturedProducts } from '@/components/home/featured-products';
 import { HowItWorks } from '@/components/home/how-it-works';
@@ -13,7 +13,7 @@ export default async function HomePage() {
   let featuredProducts = [];
   
   try {
-    const allProducts = await getProducts(8);
+    const allProducts = await getAllProducts(8);
     featuredProducts = allProducts.slice(0, 4);
   } catch (error) {
     console.error('Error loading products on homepage:', error);
