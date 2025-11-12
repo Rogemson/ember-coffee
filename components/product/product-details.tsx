@@ -11,9 +11,10 @@ import { useCart } from '@/contexts/cart-context';
 
 interface ProductDetailsProps {
   product: Product;
+  onAddToCart?: () => void;
 }
 
-export function ProductDetails({ product }: ProductDetailsProps) {
+export function ProductDetails({ product, onAddToCart }: ProductDetailsProps) {
   const { addItem } = useCart();
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
     product.variants[0]
@@ -28,25 +29,35 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const originTag = product.tags.find((tag) => tag.startsWith('origin:'));
   const origin = originTag?.split(':')[1];
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setIsAdding(true);
 
-    addItem({
-      variantId: selectedVariant.id,
-      productId: product.id,
-      productTitle: product.title,
-      variantTitle: selectedVariant.title,
-      price: selectedVariant.price.amount,
-      currencyCode: selectedVariant.price.currencyCode,
-      quantity,
-      image: product.images[0]?.url,
-    });
+    try {
+      await addItem(selectedVariant.id, quantity, {
+        productId: product.id,
+        productTitle: product.title,
+        variantTitle: selectedVariant.title,
+        price: selectedVariant.price.amount,
+        currencyCode: selectedVariant.price.currencyCode,
+        image: product.images[0]?.url,
+        handle: product.handle,
+      });
 
-    // Show feedback
-    setTimeout(() => {
+      // Show feedback
+      setTimeout(() => {
+        setIsAdding(false);
+        setQuantity(1);
+        
+        // Call the callback to open drawer
+        if (onAddToCart) {
+          onAddToCart();
+        }
+      }, 300);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
       setIsAdding(false);
-      setQuantity(1);
-    }, 500);
+      alert('Failed to add to cart. Please try again.');
+    }
   };
 
   return (

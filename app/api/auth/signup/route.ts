@@ -1,15 +1,5 @@
 import { NextResponse } from 'next/server';
-import { hash } from 'bcryptjs';
-
-// In-memory user store (same as auth route)
-// In production, use a real database
-const users: Array<{
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-  cartId?: string;
-}> = [];
+import { createShopifyCustomer } from '@/lib/shopify/customer';
 
 export async function POST(request: Request) {
   try {
@@ -23,51 +13,50 @@ export async function POST(request: Request) {
       );
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
+        { error: 'Password must be at least 8 characters' },
         { status: 400 }
       );
     }
 
-    // Check if user exists
-    const existingUser = users.find((u) => u.email === email);
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'User already exists' },
-        { status: 400 }
-      );
-    }
+    // Split name into first and last
+    const nameParts = name.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || '';
 
-    // Hash password
-    const hashedPassword = await hash(password, 12);
-
-    // Create user
-    const user = {
-      id: `user_${Date.now()}`,
+    // Create customer in Shopify
+    const customer = await createShopifyCustomer({
       email,
-      password: hashedPassword,
-      name,
-      cartId: undefined,
-    };
-
-    users.push(user);
+      password,
+      firstName,
+      lastName,
+    });
 
     return NextResponse.json(
-      { 
+      {
         success: true,
-        user: { 
-          id: user.id, 
-          email: user.email, 
-          name: user.name 
-        } 
+        customer: {
+          id: customer.id,
+          email: customer.email,
+          name: `${customer.firstName} ${customer.lastName}`.trim(),
+        },
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Signup error:', error);
+
+    // Handle Shopify-specific errors
+    if (error.message.includes('taken') || error.message.includes('already exists')) {
+      return NextResponse.json(
+        { error: 'An account with this email already exists' },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error.message || 'Failed to create account' },
       { status: 500 }
     );
   }

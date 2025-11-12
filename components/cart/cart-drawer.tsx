@@ -55,19 +55,19 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
     }
   }, [open]);
 
-  const handleRemoveItem = (variantId: string) => {
-    const element = document.querySelector(`[data-item="${variantId}"]`);
+  const handleRemoveItem = (id: string) => {
+    const element = document.querySelector(`[data-item="${id}"]`);
     if (element) {
       gsap.to(element, {
         opacity: 0,
         x: -20,
         duration: 0.3,
         onComplete: () => {
-          removeItem(variantId);
+          removeItem(id);
         },
       });
     } else {
-      removeItem(variantId);
+      removeItem(id);
     }
   };
 
@@ -196,8 +196,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <div className="space-y-4">
                   {items.map((item) => (
                     <div
-                      key={item.variantId}
-                      data-item={item.variantId}
+                      key={item.id}
+                      data-item={item.id}
                       className="flex gap-4 rounded-lg border p-3 transition-all"
                       style={{
                         borderColor: 'rgba(184, 134, 11, 0.15)',
@@ -255,7 +255,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                             )}
                           </div>
                           <button
-                            onClick={() => handleRemoveItem(item.variantId)}
+                            onClick={() => handleRemoveItem(item.id)}
                             className="text-sm hover:opacity-70 transition-opacity"
                             style={{
                               color: '#b8860b',
@@ -276,7 +276,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() =>
-                                updateQuantity(item.variantId, item.quantity - 1)
+                                updateQuantity(item.id, item.quantity - 1)
                               }
                               className="flex h-6 w-6 items-center justify-center rounded border text-sm hover:opacity-70 transition-opacity disabled:opacity-50"
                               style={{
@@ -298,7 +298,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                             </span>
                             <button
                               onClick={() =>
-                                updateQuantity(item.variantId, item.quantity + 1)
+                                updateQuantity(item.id, item.quantity + 1)
                               }
                               className="flex h-6 w-6 items-center justify-center rounded border text-sm hover:opacity-70 transition-opacity"
                               style={{
