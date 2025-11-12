@@ -57,11 +57,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Debounce timer ref
-  const syncTimeoutRef = useRef<NodeJS.Timeout>();
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get storage key
+  // cart-context.tsx, line 68
   const getStorageKey = useCallback(() => {
-    return session?.user?.id ? `cart-${session.user.id}` : 'cart-guest';
+    const key = session?.user?.id ? `cart-${session.user.id}` : 'cart-guest';
+    console.log('🔑 Cart: Using storage key:', key);
+    return key;
   }, [session?.user?.id]);
 
   /**
@@ -83,39 +86,66 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /**
-   * Load cart from Shopify or localStorage
-   */
+ * Load cart from Shopify or create new one
+ */
   const loadCart = useCallback(async () => {
+    console.log('🛒 Cart: loadCart running...');
+    
     if (status === 'loading') return;
 
     const storageKey = getStorageKey();
+    console.log('🔑 Cart: Using storage key:', storageKey);
+    
     const savedCartId = localStorage.getItem(storageKey);
+    console.log('📦 Cart: Found cart ID in localStorage:', savedCartId);
 
-    // Try to load from Shopify first
+    // If we have a saved cart ID, try to load it
     if (savedCartId) {
       try {
         const cart = await getCart(savedCartId);
         
         if (cart) {
+          console.log('🛍️ Cart: Successfully loaded cart from Shopify:', cart.id);
           setCartId(cart.id);
           setCheckoutUrl(cart.checkoutUrl);
           setItems(transformShopifyCart(cart));
           setIsInitialized(true);
+          
+          // If user is logged in, associate cart with them
+          if (status === 'authenticated' && session?.user && (session.user as any).accessToken) {
+            try {
+              const updatedCart = await updateCartBuyerIdentity(
+                cart.id,
+                (session.user as any).accessToken
+              );
+              console.log('✅ Cart: Associated with customer');
+              setCheckoutUrl(updatedCart.checkoutUrl);
+            } catch (error) {
+              console.error('⚠️ Cart: Failed to associate with customer:', error);
+            }
+          }
+          
           return;
         }
       } catch (error) {
-        console.error('Error loading cart from Shopify:', error);
-        // Clear invalid cart ID
+        console.error('❌ Cart: Error loading from Shopify:', error);
         localStorage.removeItem(storageKey);
       }
     }
 
-    // No cart exists yet
+    // No cart found - check if user is logged in and needs cart created with buyerIdentity
+    if (status === 'authenticated' && session?.user && (session.user as any).accessToken) {
+      console.log('👤 Cart: User logged in, will create cart with buyerIdentity on first add');
+    } else {
+      console.log('🤷 Cart: No cart found, will create on first add');
+    }
+
+    // Initialize empty cart
     setItems([]);
     setCartId(null);
     setCheckoutUrl(null);
     setIsInitialized(true);
-  }, [status, getStorageKey, transformShopifyCart]);
+  }, [status, session, getStorageKey, transformShopifyCart]);
 
   /**
    * Initialize cart on mount and auth change

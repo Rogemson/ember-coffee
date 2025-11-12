@@ -553,3 +553,20 @@ export const GET_CART_QUERY = `
     }
   }
 `;
+
+// Update customer metafield (to store cartId)
+export const CUSTOMER_UPDATE_MUTATION = `
+  mutation customerUpdate($customerAccessToken: String!, $customer: CustomerUpdateInput!) {
+    customerUpdate(customerAccessToken: $customerAccessToken, customer: $customer) {
+      customer {
+        id
+        email
+      }
+      customerUserErrors {
+        field
+        message
+        code
+      }
+    }
+  }
+`;

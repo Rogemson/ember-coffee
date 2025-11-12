@@ -117,3 +117,21 @@ export async function associateCartWithCustomer(
     throw error;
   }
 }
+
+/**
+ * Store cart ID in customer metafield
+ * Note: This requires Shopify Plus or custom app with metafield access
+ * For non-Plus stores, we'll use a different approach
+ */
+export async function saveCustomerCartId(
+  customerAccessToken: string,
+  cartId: string
+): Promise<void> {
+  try {
+    // Note: Customer metafields require Shopify Plus
+    // For now, we'll handle this differently
+    console.log('Cart ID would be saved to customer:', cartId);
+  } catch (error) {
+    console.error('Error saving cart ID:', error);
+  }
+}

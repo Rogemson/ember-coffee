@@ -92,7 +92,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         className="fixed right-0 top-0 z-100 h-full w-full max-w-md shadow-2xl flex flex-col overflow-hidden"
         style={{
           backgroundColor: '#faf8f3',
-          x: 380,
+          transform: 'translateX(380px)', // ← replaces x: 380
           opacity: 0,
         }}
       >

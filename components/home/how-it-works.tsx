@@ -44,9 +44,12 @@ export function HowItWorks() {
   ];
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Animate section heading
-      gsap.from(containerRef.current?.querySelector('h2'), {
+    const ctx = gsap.context((self) => {
+      // Scoped selector helper
+      const q = self.selector!;
+
+      // Heading & subtext
+      gsap.from(q('h2'), {
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top 80%',
@@ -57,7 +60,7 @@ export function HowItWorks() {
         ease: 'power2.out',
       });
 
-      gsap.from(containerRef.current?.querySelector('p'), {
+      gsap.from(q('p'), {
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top 80%',
@@ -69,13 +72,12 @@ export function HowItWorks() {
         delay: 0.2,
       });
 
-      // Stagger step cards animation
-      stepsRef.current.forEach((step, index) => {
-        if (!step) return;
-
-        gsap.from(step, {
+      // Cards
+      const cards = q('.step') as Element[]; // Element[] is fine for GSAP
+      cards.forEach((card, index) => {
+        gsap.from(card, {
           scrollTrigger: {
-            trigger: step,
+            trigger: card,
             start: 'top 85%',
           },
           opacity: 0,
@@ -85,23 +87,30 @@ export function HowItWorks() {
           delay: index * 0.15,
         });
 
-        // Hover effect
-        step.addEventListener('mouseenter', () => {
-          gsap.to(step, {
+        // Hover lift (use handlers we can remove on cleanup)
+        const onEnter = () =>
+          gsap.to(card, {
             y: -8,
             boxShadow: '0 20px 40px rgba(61, 40, 23, 0.12)',
             duration: 0.4,
             ease: 'power2.out',
           });
-        });
 
-        step.addEventListener('mouseleave', () => {
-          gsap.to(step, {
+        const onLeave = () =>
+          gsap.to(card, {
             y: 0,
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
             duration: 0.4,
             ease: 'power2.out',
           });
+
+        card.addEventListener('mouseenter', onEnter);
+        card.addEventListener('mouseleave', onLeave);
+
+        // Register removal with ctx so revert cleans them up too
+        ctx.add(() => {
+          card.removeEventListener('mouseenter', onEnter);
+          card.removeEventListener('mouseleave', onLeave);
         });
       });
     }, containerRef);

@@ -195,7 +195,6 @@ export function SignUpForm() {
             size="lg"
             className="w-full"
             disabled={isLoading}
-            isLoading={isLoading}
           >
             {isLoading ? 'Creating account...' : 'Create Account'}
           </Button>

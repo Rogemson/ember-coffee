@@ -7,6 +7,7 @@ declare module 'next-auth' {
     name: string;
     accessToken?: string;
     expiresAt?: string;
+    cartId?: string | null; // Add this
   }
 
   interface Session {
@@ -16,6 +17,7 @@ declare module 'next-auth' {
       name: string;
       accessToken?: string;
       expiresAt?: string;
+      cartId?: string | null; // Add this
     };
   }
 }
@@ -27,5 +29,6 @@ declare module 'next-auth/jwt' {
     name: string;
     accessToken?: string;
     expiresAt?: string;
+    cartId?: string | null; // Add this
   }
 }
