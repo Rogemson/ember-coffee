@@ -187,11 +187,60 @@ export const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
     cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
       cart {
         id
+        checkoutUrl
+        totalQuantity
+        cost {
+          totalAmount {
+            amount
+            currencyCode
+          }
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+        }
         buyerIdentity {
           email
           customer {
             id
             email
+          }
+        }
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              cost {
+                totalAmount {
+                  amount
+                  currencyCode
+                }
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  product {
+                    id
+                    title
+                    handle
+                  }
+                  image {
+                    url
+                    altText
+                  }
+                  price { # Changed from priceV2 back to price
+                    amount
+                    currencyCode
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -202,6 +251,7 @@ export const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
     }
   }
 `;
+
 
 export const CREATE_CART_MUTATION = `
   mutation cartCreate($input: CartInput!) {

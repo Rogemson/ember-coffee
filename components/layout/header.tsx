@@ -282,7 +282,7 @@ export function Header() {
                     ) : (
                       <>
                         <Link
-                          href="/login"
+                          href="/sign-in"
                           className="block px-4 py-3 hover:opacity-70 transition-opacity"
                           style={{
                             fontSize: '0.95rem',
@@ -294,7 +294,7 @@ export function Header() {
                           Sign In
                         </Link>
                         <Link
-                          href="/register"
+                          href="/sign-up"
                           className="block px-4 py-3 hover:opacity-70 transition-opacity border-t"
                           style={{
                             fontSize: '0.95rem',
